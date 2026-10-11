@@ -356,7 +356,7 @@ body.st-open { overflow: hidden; }
   #printSheet table { width: 100%; border-collapse: collapse; margin: 0 0 4pt; }
   #printSheet th, #printSheet td { text-align: left; vertical-align: top; padding: 2.5pt 6pt 2.5pt 0; border-bottom: .5pt solid #bbb; font-weight: 400; }
   #printSheet th { width: 46%; color: #333; }
-  #printSheet table.grid th, #printSheet table.grid td { white-space: normal !important; overflow-wrap: anywhere; word-break: normal; min-width: 0 !important; max-width: none !important; } #printSheet table.grid { table-layout: fixed; width: 100% !important; max-width: 100%; } #printSheet table.cg th:nth-child(1), #printSheet table.cg td:nth-child(1) { width: 20%; } #printSheet table.cg th:nth-child(2), #printSheet table.cg td:nth-child(2) { width: 27%; } #printSheet table.cg th:nth-child(3), #printSheet table.cg td:nth-child(3) { width: 10%; } #printSheet table.cg th:nth-child(4), #printSheet table.cg td:nth-child(4) { width: 13%; } #printSheet table.cg th:nth-child(5), #printSheet table.cg td:nth-child(5) { width: 30%; } #printSheet table.cg td.r, #printSheet table.cg th.r { white-space: normal; } #printSheet table.grid th, #printSheet table.grid td { width: auto; overflow-wrap: anywhere; font-size: 9pt; }
+  #printSheet table.grid th, #printSheet table.grid td { white-space: normal !important; overflow-wrap: anywhere; word-break: normal; min-width: 0 !important; max-width: none !important; } #printSheet table.grid { table-layout: fixed; width: 100% !important; max-width: 100%; } #printSheet table.cg th:nth-child(1), #printSheet table.cg td:nth-child(1) { width: 20%; } #printSheet table.cg th:nth-child(2), #printSheet table.cg td:nth-child(2) { width: 27%; } #printSheet table.cg th:nth-child(3), #printSheet table.cg td:nth-child(3) { width: 10%; } #printSheet table.cg th:nth-child(4), #printSheet table.cg td:nth-child(4) { width: 13%; } #printSheet table.cg th:nth-child(5), #printSheet table.cg td:nth-child(5) { width: 30%; } #printSheet table.op th:nth-child(1), #printSheet table.op td:nth-child(1) { width: 20%; } #printSheet table.op th:nth-child(2), #printSheet table.op td:nth-child(2) { width: 48%; } #printSheet table.op th:nth-child(3), #printSheet table.op td:nth-child(3) { width: 32%; } #printSheet table.cg td.r, #printSheet table.cg th.r { white-space: normal; } #printSheet table.grid th, #printSheet table.grid td { width: auto; overflow-wrap: anywhere; font-size: 9pt; }
   #printSheet table.grid thead th { font-weight: 700; border-bottom: .8pt solid #111; color: #111; }
   #printSheet td.r, #printSheet th.r { text-align: right; white-space: nowrap; }
   #printSheet tr.sum td, #printSheet tr.sum th { font-weight: 700; border-top: .8pt solid #111; }
@@ -404,7 +404,7 @@ body.fp-body { padding-bottom: 0; }
   <div class="infobox" id="infoBox" hidden>
     <h2>Über diese Seite</h2>
     <p>Der Finanzplaner rechnet aus deinen Angaben hoch, wie sich Vermögen, Rente und Ausgaben entwickeln, auch für das Szenario „Aufhören zu arbeiten“ mit Abfindung. Alles wird im Browser gerechnet, es werden keine Zahlen an einen Server geschickt. Mit „Speichern“ legst du deine Eingaben als Datei ab, mit „Drucken“ erzeugst du ein Blatt mit allen Eingaben und den wichtigsten Ergebnissen für ein Beratungsgespräch.</p>
-    <p><b>Wichtig:</b> Privates Projekt ohne Anspruch auf Vollständigkeit oder Richtigkeit. Die Berechnungen sind vereinfachte Schätzungen und keine Steuer-, Rechts- oder Anlageberatung. Sie dienen als Berechnungsgrundlage für ein Gespräch mit einer Steuerberaterin bzw. einem Steuerberater oder Finanzberater. Steuern, Sozialabgaben, Renten und Renditen sind vereinfacht und teils geschätzt (zum Beispiel Steuer auf die Abfindung ohne Solidaritätszuschlag, Kranken- und Pflegeversicherung als Mindestbeitrag, kein Arbeitslosengeld).</p>
+    <p><b>Wichtig:</b> Privates Projekt ohne Anspruch auf Vollständigkeit oder Richtigkeit. Die Berechnungen sind vereinfachte Schätzungen und keine Steuer-, Rechts- oder Anlageberatung. Sie dienen als Berechnungsgrundlage für ein Gespräch mit einer Steuerberaterin bzw. einem Steuerberater oder Finanzberater. Steuern, Sozialabgaben, Renten und Renditen sind vereinfacht und teils geschätzt (zum Beispiel Solidaritätszuschlag nur genähert, Kranken- und Pflegeversicherung als Mindestbeitrag, kein Arbeitslosengeld).</p>
   </div>
   <div class="intro" style="display:flex;flex-direction:column;gap:8px">
     <h2 id="h1">Wo stehst du heute, bei Rente und im Wunschalter?</h2>
@@ -694,6 +694,15 @@ function estGrund(x) {
   return Math.floor(0.45 * x - 19470.38);
 }
 function est(x, split) { return split ? 2 * estGrund(x / 2) : estGrund(x); }
+// Solidaritätszuschlag 2026: Freigrenze 20.350 € (Einzel) bzw. 40.700 € (gemeinsam), Milderungszone 11,9 %, höchstens 5,5 %.
+// Näherung: Kinderfreibetrag (9.756 € je Kind bei gemeinsamer Veranlagung) mindert die Bemessungsgrundlage.
+function soliOf(taxTotal, zve, split, kinder) {
+  if (!(taxTotal > 0)) return 0;
+  const kfb = split ? (kinder || 0) * 9756 : 0;
+  const red = kfb > 0 ? est(zve, split) - est(Math.max(0, zve - kfb), split) : 0;
+  const bm = Math.max(0, taxTotal - red), fg = split ? 40700 : 20350;
+  return bm <= fg ? 0 : Math.min(0.055 * bm, 0.119 * (bm - fg));
+}
 function kistRate(k) { return k === '9' ? 0.09 : (k === '8' ? 0.08 : 0); }
 function kapStRate(k) {
   const c = kistRate(k);
@@ -720,20 +729,21 @@ function netIncome(P) {
   const split = P.status === 'verheiratet', sep = P.status === 'paar';
   const ps = [{ b: P.brutto, beruf: P.beruf }];
   if (P.partner) ps.push({ b: P.partner.brutto, beruf: P.partner.beruf });
-  let sumB = 0, sumSv = 0, sumZ = 0, sepTax = 0;
+  let sumB = 0, sumSv = 0, sumZ = 0, sepTax = 0, sepSoli = 0;
   ps.forEach(p => {
     const b = Math.max(0, p.b), sv = b > 0 ? svOf(b, p.beruf, P.kinder) : 0;
     sumB += b; sumSv += sv; sumZ += b > 0 ? Math.max(0, b - sv - 1230) : 0;
-    if (sep) sepTax += est(Math.max(0, (b > 0 ? Math.max(0, b - sv - 1230) : 0) - 36), false);
+    if (sep) { const zz = Math.max(0, (b > 0 ? Math.max(0, b - sv - 1230) : 0) - 36), tt = est(zz, false); sepTax += tt; sepSoli += soliOf(tt, zz, false, 0); }
   });
   const zve = Math.max(0, sumZ - (split ? 72 : 36));
   const tax = sep ? sepTax : est(zve, split);
   const kist = tax * kistRate(P.kirche);
-  return { net: sumB - sumSv - tax - kist, sv: sumSv, tax, kist };
+  const soli = sep ? sepSoli : soliOf(tax, zve, split, P.kinder);
+  return { net: sumB - sumSv - tax - kist - soli, sv: sumSv, tax, kist, soli };
 }
 function abfindungNetto(P, A) {
-  // A: Werte aus der Abfindung.json (abf brutto, exitY/exitM, z1y/z1p … Auszahlungsjahre mit Prozent). Grobe Rechnung: Fünftelregelung gegen normale Besteuerung, Günstigerprüfung, ohne Soli.
-  const res = { net: 0, tax: 0, brutto: 0 };
+  // A: Werte aus der Abfindung.json (abf brutto, exitY/exitM, z1y/z1p … Auszahlungsjahre mit Prozent). Grobe Rechnung: Fünftelregelung gegen normale Besteuerung, Günstigerprüfung, mit Soli (genähert).
+  const res = { net: 0, tax: 0, brutto: 0, soli: 0, einbehalt: 0 };
   if (!A || !(A.abf > 0)) return res;
   const split = P.status === 'verheiratet', ki = kistRate(P.kirche), exitY = +A.exitY || 0, exitM = Math.min(12, Math.max(0, +A.exitM || 12));
   const parts = [[A.z1y, A.z1p], [A.z2y, A.z2p], [A.z3y, A.z3p]].map(x => [+x[0], +x[1]]).filter(x => x[0] > 0 && x[1] > 0);
@@ -746,8 +756,14 @@ function abfindungNetto(P, A) {
     const f = y < exitY ? 1 : (y === exitY ? exitM / 12 : 0);
     const base = Math.max(0, zOf({ b: P.brutto, beruf: P.beruf }, f) + partnerZ - (split ? 72 : 36));
     const normal = est(base + pay, split) - est(base, split), fifth = 5 * (est(base + pay / 5, split) - est(base, split));
-    const tax = Math.min(normal, fifth) * (1 + ki);
-    res.tax += tax; res.net += pay - tax; res.brutto += pay;
+    const eb = est(base, split), useFifth = fifth <= normal;
+    const sBase = soliOf(eb, base, split, P.kinder);
+    const soliN = soliOf(est(base + pay, split), base + pay, split, P.kinder) - sBase;
+    const soliF = soliOf(eb + fifth, base + pay / 5, split, P.kinder) - sBase;
+    const taxF = (useFifth ? fifth : normal) * (1 + ki) + Math.max(0, useFifth ? soliF : soliN);
+    const taxLSt = normal * (1 + ki) + Math.max(0, soliN);
+    const tax = taxF;
+    res.tax += tax; res.soli += Math.max(0, useFifth ? soliF : soliN); res.einbehalt += taxLSt; res.net += pay - tax; res.brutto += pay;
   });
   return res;
 }
@@ -798,7 +814,8 @@ function pensionCore(P, items, split) {
   });
   const tax = est(taxable, split);
   const kist = tax * kistRate(P.kirche);
-  return { gross: J / 12, net: (J - KV - tax - kist) / 12, deductions: (KV + tax + kist) / 12, share: shares[0], taxable };
+  const soli = soliOf(tax, taxable, split, 0);
+  return { gross: J / 12, net: (J - KV - tax - kist - soli) / 12, deductions: (KV + tax + kist + soli) / 12, share: shares[0], taxable };
 }
 function kaufModel(k) {
   const nkE = k.preis * k.nk, need = k.preis + nkE, loan = Math.max(0, need - k.ek);
@@ -1998,7 +2015,7 @@ function compute(P) {
     // Bis zur Rente in Zahlen
     var yL = Math.max(0, (R.stop ? R.stop.quitAge : R.retAge) - R.age0), ni = R.ni, gB = ni.net + ni.sv + ni.tax + ni.kist, cur = new Date();
     if (yL > 0.5 && gB > 0) {
-      var wd = yL * 219, hrs = wd * 8, tTax = (ni.tax + ni.kist) * yL, tSv = ni.sv * yL, tGross = gB * yL, tNet = ni.net * yL;
+      var wd = yL * 219, hrs = wd * 8, tTax = (ni.tax + ni.kist + (ni.soli || 0)) * yL, tSv = ni.sv * yL, tGross = gB * yL, tNet = ni.net * yL;
       var shTax = (ni.tax + ni.kist) / gB, shAll = (ni.tax + ni.kist + ni.sv) / gB;
       var dayOf = function (sh) { var d = new Date(2026, 0, 1 + Math.round(sh * 365)); return d.getDate() + '. ' + ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'][d.getMonth()]; };
       var hh = two ? ' (Haushalt)' : '';
@@ -2382,6 +2399,7 @@ function compute(P) {
       var S = R && R.stop, rows = [psRow('Letzter Arbeitstag', pDate('stopDate') === '–' ? 'ab sofort (kein Datum eingetragen)' : pDate('stopDate'))];
       if (S) {
         rows.push(psRow('Abfindung netto (in der Rechnung)', eur(S.abf) + (ABF && !(pv('stopAbf') > 0) ? ' (aus Abfindungsdatei: brutto ' + eur(ABF.abf) + ', geschätzte Steuer ' + eur(S.abfInfo ? S.abfInfo.tax : 0) + ')' : (pv('stopAbf') ? ' (manuell eingetragen)' : ''))));
+        if (S.abfInfo && !S.abfInfo.manuell && S.abfInfo.einbehalt > 0) rows.push(psRow('Abfindung: voraussichtlicher Steuereinbehalt bei Auszahlung', eur(S.abfInfo.einbehalt) + ' (ohne Fünftelregelung); Erstattung mit dem Steuerbescheid ca. ' + eur(Math.max(0, S.abfInfo.einbehalt - S.abfInfo.tax)) + ', Steuer endgültig ca. ' + eur(S.abfInfo.tax) + ' (davon Soli ca. ' + eur(S.abfInfo.soli) + ')'));
       } else rows.push(psRow('Abfindung netto', pEur('stopAbf')));
       rows.push(psRow('Ausgaben pro Monat nach dem Ausstieg', pv('stopLeben') ? pEur('stopLeben') : (S ? eur(S.living) + ' (aus den Ausgaben im Ruhestand)' : '–')));
       rows.push(psRow('Weitere Einnahmen pro Monat (netto)', pv('stopExtra') ? pEur('stopExtra') : (S && S.extraAuto ? eur(S.extra) + ' (geschätzt, Netto der 2. Person)' : '0 €')));
@@ -2415,7 +2433,28 @@ function compute(P) {
       }
       h += psSec(n + '. Rechenergebnisse zu diesen Eingaben', res); n++;
     }
-    h += psSec('Vereinfachungen und Grenzen', '<ul><li>Steuern und Sozialabgaben sind nach einem vereinfachten Modell gerechnet. Die Steuer auf die Abfindung (Fünftelregelung) ist eine Schätzung ohne Solidaritätszuschlag und ohne die übrigen Einkünfte im Jahr der Zahlung.</li>' +
+    // Offene Punkte zur Klärung
+    (function () {
+      var rowsOp = [], add = function (t, x, k) { rowsOp.push('<tr><td>' + t + '</td><td>' + x + '</td><td>' + k + '</td></tr>'); };
+      var St = R && R.stop, stopOn = pv('stopOn') === '1';
+      if (stopOn) {
+        if (pv('stopAbf') > 0 || (pv('stopAbf') && parseFloat(String(pv('stopAbf')).replace(',', '.')) > 0)) add('Abfindung', 'Netto-Betrag manuell eingetragen und nicht bestätigt. Seit 2025 wird die Fünftelregelung im Lohnsteuerabzug nicht mehr berücksichtigt, sie greift erst in der Steuererklärung (Erstattung später).', 'Schriftliche Angabe des Arbeitgebers: Brutto, Auszahlungsmonat, einbehaltene Steuer. Steuerberater: Steuerjahr 2027 komplett rechnen.');
+        else if (St && St.abfInfo && St.abfInfo.einbehalt > 0) add('Abfindung', 'Steuer wird mit Fünftelregelung geschätzt. Bei Auszahlung wird voraussichtlich mehr Steuer einbehalten (ca. ' + eur(St.abfInfo.einbehalt) + ' statt ' + eur(St.abfInfo.tax) + '), die Erstattung folgt mit dem Steuerbescheid.', 'Arbeitgeber: Abrechnung der Abfindung. Steuerberater: Veranlagung und Zahlungszeitpunkt.');
+        add('Solidaritätszuschlag', 'Wird nur genähert (Kinderfreibetrag vereinfacht, übrige Einkünfte und Vorsorgeaufwendungen nicht einzeln).', 'Steuerberater: Berechnung für das Jahr der Abfindung.');
+        add('Krankenversicherung nach dem Ausstieg', (pv('stopKv') ? 'Beitrag manuell eingetragen.' : 'Nur als Mindestbeitrag geschätzt.') + ' Bei freiwilliger Versicherung zählen Kapitalerträge und Entnahmen mit. Ob die Abfindung beitragspflichtig ist, hängt von der Kasse ab.', 'Krankenkasse: Beitragsprognose für freiwillig Versicherte mit erwarteten Kapitalerträgen.');
+        add('Arbeitslosengeld I', 'Nicht berücksichtigt (konservativ). Dauer, Höhe, Sperrzeit und Ruhen bei Aufhebungsvertrag sind offen.', 'Agentur für Arbeit: Anspruch und Dauer prüfen.');
+        if (!pv('stopRente')) add('Rente nach dem Ausstieg', '„Bisher erreichte Rente“ fehlt. Das Modell schätzt aus der Renteninformation (Hochrechnung bis zur Regelaltersgrenze) minus entfallene Beitragsjahre.', 'Deutsche Rentenversicherung: aktuelle Renteninformation bzw. Rentenauskunft (bisher erreichte Rente).');
+        add('Frührente und Ausgleichszahlung', 'Rente vor der Regelaltersgrenze (mit Abschlägen, auch mit Ausgleichszahlung nach § 187a SGB VI) ist nicht abgebildet.', 'Deutsche Rentenversicherung: Rentenauskunft mit Ausgleichszahlung. Steuerberater: Sonderausgabenabzug und Verteilung über Jahre.');
+      }
+      if (parseFloat(String(pv('renteInfo') || '').replace(',', '.')) > 0) add('Renteninformation', 'Die Renteninformation nennt Werte mit und ohne Rentenanpassung. Welcher Wert eingetragen ist, steht nicht in den Eingaben.', 'Renteninformation prüfen und Wert eintragen („ohne Anpassung“ passt zu „heutige Preise“).');
+      CON.forEach(function (c) { if (c.type === 'bu' && +c.leistung > 0 && +c.beitrag > 0 && +c.leistung < +c.beitrag * 2) add('Berufsunfähigkeitsversicherung', 'Versicherte Rente (' + eur(+c.leistung) + ' pro Monat) ist niedrig im Verhältnis zum Beitrag (' + eur(+c.beitrag) + ' pro Monat). Mögliche Fehleingabe.', 'Police oder Versicherungsschein prüfen.'); });
+      var wu = parseFloat(String(pv('wunsch') || '').replace(',', '.')); if (wu > 95) add('Wunschalter', 'Eingegeben ist ' + num(wu) + ', die Berechnung begrenzt auf höchstens 95.', 'Eingabe anpassen.');
+      add('Betriebliche Leistungen', 'Auszahlungsform, Zeitpunkt und Besteuerung hängen vom Durchführungsweg ab (zum Beispiel Auszahlung vor Rentenbeginn).', 'Versorger: schriftliche Auskunft zu Auszahlung, Steuer und Krankenkassenbeiträgen.');
+      add('Rendite und Risiko', 'Konstante Rendite ohne Schwankungen. Ein Kursrückgang zu Beginn der Entnahme ist nicht abgebildet.', 'Zweites Szenario mit niedrigerer Rendite.');
+      add('Absicherung der Familie', 'Hinterbliebenenversorgung, Pflegekosten und Erbfall sind nicht berechnet.', 'Beratung: Versorgung bei Tod oder Pflege einer Person prüfen.');
+      h += psSec('Offene Punkte zur Klärung', '<table class="grid op"><thead><tr><th>Thema</th><th>Offener Punkt</th><th>Klärung durch</th></tr></thead>' + rowsOp.join('') + '</table>');
+    })();
+    h += psSec('Vereinfachungen und Grenzen', '<ul><li>Steuern und Sozialabgaben sind nach einem vereinfachten Modell gerechnet. Die Steuer auf die Abfindung (Fünftelregelung) ist eine Schätzung mit genähertem Solidaritätszuschlag (Kinderfreibetrag vereinfacht) und ohne weitere Einkünfte im Jahr der Zahlung.</li>' +
       '<li>Die gesetzliche Rente stammt aus der angegebenen Renteninformation bzw. einer Schätzung aus Brutto und Berufsjahren. Betriebliche Leistungen sind so eingegeben, wie sie oben stehen.</li>' +
       '<li>Kranken- und Pflegeversicherung nach dem Ausstieg sind als Mindestbeitrag geschätzt. Arbeitslosengeld, Sperrzeit, Hinterbliebenenversorgung und Pflegekosten sind nicht berücksichtigt.</li>' +
       '<li>In der gemeinsamen Berechnung arbeitet die zweite Person bis zu ihrem Renteneintritt weiter.</li>' +
