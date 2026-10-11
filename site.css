@@ -1,0 +1,252 @@
+/* Gemeinsames Design für alle Seiten: Kopfleiste, Seitenköpfe, Karten, Boxen. */
+:root { --rust: #B5502E; --ink: #2E3A32; --paper: #FAF3E8; --paper-warm: #F3E9D8; --ink-soft: #5A6A5E; }
+
+/* ---------- Kopfleiste ---------- */
+.topbar { position: sticky; top: 0; z-index: 50; background: rgba(250, 243, 232, .82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid rgba(46, 58, 50, .08); transition: box-shadow .25s; font-family: 'Work Sans', sans-serif; line-height: 1.3; }
+.topbar.stuck { box-shadow: 0 6px 24px rgba(46, 58, 50, .1); }
+.topin { max-width: 1180px; margin: 0 auto; padding: 8px 14px; display: flex; align-items: center; gap: 10px; }
+.topbar .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); font-family: 'Fraunces', serif; font-weight: 500; font-size: 17px; flex: none; border: 0; }
+.topbar .brand img { width: 34px; height: 34px; border-radius: 9px; display: block; box-shadow: 0 2px 8px rgba(181, 80, 46, .35); }
+.topbar .brand .bt { display: none; }
+.topnav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; flex: 1; min-width: 0; padding: 2px 0; -webkit-mask-image: linear-gradient(90deg, #000 90%, transparent); mask-image: linear-gradient(90deg, #000 90%, transparent); }
+.topnav::-webkit-scrollbar { display: none; }
+.topbar .topnav a { text-decoration: none; color: var(--ink); font-size: 14.5px; padding: 7px 13px; border-radius: 999px; border: 0; white-space: nowrap; flex: none; transition: background .2s, color .2s; }
+.topbar .topnav a:hover { background: rgba(46, 58, 50, .1); }
+.topbar .topnav a[aria-current] { background: var(--ink); color: var(--paper); }
+@media (min-width: 700px) {
+  .topin { padding: 12px 32px; justify-content: space-between; gap: 16px; }
+  .topnav { flex: none; overflow: visible; -webkit-mask-image: none; mask-image: none; }
+}
+
+/* ---------- Seitenköpfe ---------- */
+body[class^="page-"] .wrap { padding-top: 28px; }
+.entry-header { position: relative; }
+.entry-header .date { display: inline-block; font-style: normal; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--rust); background: rgba(181, 80, 46, .1); padding: 5px 12px; border-radius: 99px; margin: 0 0 14px; }
+.entry-header h1 { letter-spacing: -.02em; text-wrap: balance; }
+.rule { width: 72px; height: 5px; border-radius: 99px; background: linear-gradient(90deg, var(--rust), #F0A15A); }
+body[class^="page-"]::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 420px; z-index: -1; pointer-events: none;
+  background: radial-gradient(420px 260px at 85% 70px, rgba(240, 161, 90, .28), transparent 70%), radial-gradient(380px 240px at 8% 150px, rgba(143, 163, 152, .28), transparent 70%); }
+body[class^="page-"] { position: relative; }
+.subhead, .page-info h2.subhead { font-family: 'Fraunces', serif; position: relative; padding-left: 16px; }
+.subhead::before { content: ''; position: absolute; left: 0; top: .22em; bottom: .22em; width: 5px; border-radius: 99px; background: linear-gradient(180deg, var(--rust), #F0A15A); }
+
+/* ---------- Boxen und Tabellen ---------- */
+.tip-box, .safety-box, .note-box, .hotel-group, .chol-card, .recipe-ingredients, .disclaimer { border-radius: 16px; }
+.hotel-group, .tip-box, .note-box { box-shadow: 0 8px 22px rgba(46, 58, 50, .07); }
+article table { border-radius: 14px; }
+article th { background: rgba(181, 80, 46, .08); }
+
+/* ---------- Übersichtskarten (Reisen, Rezepte) ---------- */
+.page-list .entry-list { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 22px; }
+.page-list .entry-list .entry-preview, .page-list .entry-list .entry-preview:first-child { position: relative; display: flex; flex-direction: column; padding: 20px 20px 22px; border: 0; border-radius: 22px; background: #fff; overflow: hidden;
+  box-shadow: 0 2px 0 rgba(46, 58, 50, .05), 0 10px 26px rgba(46, 58, 50, .09); transition: transform .25s cubic-bezier(.2, .9, .3, 1), box-shadow .25s; }
+.page-list .entry-list .entry-preview::after { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 5px; background: linear-gradient(90deg, var(--c1, var(--rust)), var(--c2, #F0A15A)); }
+.page-list .entry-list .entry-preview:nth-child(4n+2) { --c1: #2F7E86; --c2: #8FC5B8; }
+.page-list .entry-list .entry-preview:nth-child(4n+3) { --c1: #C99A3E; --c2: #F2D27A; }
+.page-list .entry-list .entry-preview:nth-child(4n+4) { --c1: #5E7B66; --c2: #A9C5A0; }
+.page-list .entry-list .entry-preview:hover { transform: translateY(-4px); box-shadow: 0 2px 0 rgba(46, 58, 50, .05), 0 18px 38px rgba(46, 58, 50, .14); }
+.page-list .entry-list .entry-preview .date { order: 2; font-size: 11.5px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--c1, var(--rust)); margin: 0 0 6px; }
+.page-list .entry-list .entry-preview h2 { order: 3; font-size: 23px; line-height: 1.2; margin: 0 0 8px; padding-right: 22px; }
+.page-list .entry-list .entry-preview p:not(.date) { order: 4; font-size: 15px; line-height: 1.55; color: var(--ink-soft); }
+.page-list .entry-preview .em { order: 1; display: inline-flex; align-items: center; justify-content: center; width: 58px; height: 58px; font-size: 32px; line-height: 1; border-radius: 18px; margin-bottom: 14px; background: linear-gradient(135deg, color-mix(in srgb, var(--c1, var(--rust)) 18%, #fff), color-mix(in srgb, var(--c2, #F0A15A) 30%, #fff)); transition: transform .3s cubic-bezier(.2, 1.4, .4, 1); }
+.page-list .entry-preview:hover .em { transform: rotate(-8deg) scale(1.1); }
+.page-list .entry-list .entry-preview .ampel-dot { top: 24px; right: 22px; box-shadow: 0 0 0 4px rgba(255, 255, 255, .9); }
+.page-list .entry-preview.hidden { display: none; }
+@media (min-width: 700px) {
+  .page-list .entry-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+}
+@media (min-width: 1000px) {
+  .page-list .entry-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .page-list .entry-list .entry-preview, .page-list .entry-list .entry-preview:first-child { padding: 24px 24px 26px; }
+}
+@media (min-width: 1300px) { .page-list .entry-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* Reisen: Kopfband mit Chips */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; }
+.chips span { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; padding: 7px 14px; border-radius: 99px; background: #fff; border: 1px solid rgba(46, 58, 50, .12); box-shadow: 0 4px 14px rgba(46, 58, 50, .06); }
+.page-reisen .entry-list .entry-preview:first-child { background: linear-gradient(135deg, #3E5146, #26322B); }
+.page-reisen .entry-list .entry-preview:first-child h2, .page-reisen .entry-list .entry-preview:first-child p:not(.date) { color: #FAF3E8; }
+.page-reisen .entry-list .entry-preview:first-child .date { color: #F0A15A; }
+.page-reisen .entry-list .entry-preview:first-child .em { background: rgba(255, 255, 255, .14); }
+@media (min-width: 1000px) { .page-reisen .entry-list .entry-preview:first-child { grid-column: span 3; flex-direction: column; } }
+
+/* Rezeptseiten: Ruhe im Layout */
+.page-recipe .recipe-ingredients { box-shadow: 0 8px 22px rgba(46, 58, 50, .07); }
+@media (prefers-reduced-motion: reduce) { .page-list .entry-preview, .page-list .entry-preview .em { transition: none; } }
+body .topbar .topnav a { color: var(--ink) !important; text-decoration: none !important; }
+body .topbar .topnav a[aria-current] { color: var(--paper) !important; }
+
+/* Textseiten: eine ruhige Lesespalte statt zwei Spalten */
+@media (min-width: 1000px) {
+  .page-info.page-single article { column-count: 1; max-width: 860px; }
+  .page-single .wrap { max-width: 1000px; }
+}
+.page-single .entry-body li { margin-bottom: 10px; }
+.page-single .entry-body ul { padding-left: 22px; }
+.page-single .nutri-table td:first-child { font-weight: 600; }
+.page-single .entry-body { max-width: none; }
+.page-single .entry-body p::first-letter { font-size: inherit; float: none; color: inherit; line-height: inherit; padding: 0; margin: 0; font-family: inherit; }
+.page-single .entry-header + .entry-body p:first-of-type::first-letter { font-family: 'Fraunces', serif; font-size: 3.1em; float: left; line-height: .85; padding: .08em .1em 0 0; color: var(--rust); }
+.page-single .entry-body p { max-width: none; }
+.page-single .entry-body { font-size: 17px; }
+
+/* Rezepte: Filter als Chips */
+.page-list .entry-body p:first-of-type::first-letter { font-family: inherit; font-size: inherit; float: none; padding: 0; color: inherit; line-height: inherit; }
+.page-list .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 14px; }
+.page-list .ampel-btn, .page-list .blitz-btn { width: auto; height: auto; display: inline-flex; align-items: center; gap: 8px; padding: 9px 15px; border-radius: 99px; border: 1.5px solid rgba(46, 58, 50, .14); background: #fff; color: var(--ink); font: 500 14.5px 'Work Sans', sans-serif; opacity: 1; cursor: pointer; box-shadow: 0 3px 10px rgba(46, 58, 50, .06); transition: transform .15s, background .2s, color .2s, border-color .2s; }
+.page-list .ampel-btn i { width: 12px; height: 12px; border-radius: 50%; display: block; background: #4c9a4c; }
+.page-list .ampel-btn.gelb i { background: #e0b83c; }
+.page-list .ampel-btn.rot i { background: #c0392b; }
+.page-list .ampel-btn.gruen, .page-list .ampel-btn.gelb, .page-list .ampel-btn.rot { background: #fff; }
+.page-list .ampel-btn:hover, .page-list .blitz-btn:hover { transform: translateY(-1px); }
+.page-list .ampel-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.page-list .ampel-btn.active i { box-shadow: 0 0 0 3px rgba(255, 255, 255, .85); }
+.page-list .blitz-btn { border-color: rgba(201, 154, 62, .6); }
+.page-list .blitz-btn small { font-size: 12px; color: var(--ink-soft); font-weight: 400; }
+.page-list .blitz-btn.active { background: var(--rust); border-color: var(--rust); color: #fff; }
+.page-list .blitz-btn.active small { color: rgba(255, 255, 255, .85); }
+.page-list .search-field { border: 1.5px solid rgba(46, 58, 50, .14); background: #fff; box-shadow: 0 3px 10px rgba(46, 58, 50, .06); }
+html, body { overflow-x: clip; max-width: 100%; }
+
+/* iPhone zoomt beim Antippen von Feldern unter 16 px und bleibt vergrößert: Felder am Handy immer mindestens 16 px */
+@media (max-width: 900px) {
+  input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="button"]):not([type="submit"]), select, textarea { font-size: 16px !important; }
+}
+/* Ampel: nur Farbpunkte, ohne Text */
+.page-list .ampel-btn { width: 44px; height: 44px; padding: 0; justify-content: center; gap: 0; }
+.page-list .ampel-btn i { width: 22px; height: 22px; }
+.page-list .ampel-btn.active { background: #fff; border-color: var(--ink); box-shadow: 0 0 0 3px rgba(46, 58, 50, .18); color: var(--ink); }
+.page-list .ampel-btn.active i { box-shadow: none; transform: scale(1.12); }
+.page-list .filter-bar { align-items: center; }
+
+/* ---------- Rezepte: appetitlicher ---------- */
+.rmedia { position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; background: linear-gradient(135deg, var(--c1, #F2A65A), var(--c2, #C8562B)); }
+.rmedia::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 25% 20%, rgba(255, 255, 255, .35), transparent 55%), radial-gradient(circle at 85% 90%, rgba(0, 0, 0, .12), transparent 50%); }
+.rmedia::after { content: ''; position: absolute; width: 180%; height: 60%; left: -40%; bottom: -34%; border-radius: 50%; background: rgba(255, 255, 255, .14); }
+.rmedia .remo { position: relative; z-index: 1; font-size: 72px; line-height: 1; filter: drop-shadow(0 8px 12px rgba(0, 0, 0, .22)); transition: transform .35s cubic-bezier(.2, 1.4, .4, 1); }
+.rmedia img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
+
+.page-list .entry-list .entry-preview.has-media, .page-list .entry-list .entry-preview.has-media:first-child { padding: 0 0 20px; }
+.page-list .entry-preview.has-media > :not(.rmedia):not(.ampel-dot) { margin-left: 20px; margin-right: 20px; }
+.page-list .entry-preview.has-media .rmedia { order: 0; height: 168px; margin-bottom: 16px; }
+.page-list .entry-preview.has-media:hover .remo { transform: scale(1.15) rotate(-6deg); }
+.page-list .entry-preview.has-media .ampel-dot { top: 14px; right: 14px; z-index: 3; width: 18px; height: 18px; box-shadow: 0 0 0 4px rgba(255, 255, 255, .95), 0 2px 8px rgba(0, 0, 0, .2); }
+.page-list .entry-preview.has-media::after { z-index: 3; }
+.page-list .entry-preview.has-media h2 { padding-right: 0; }
+@media (min-width: 1000px) { .page-list .entry-list .entry-preview.has-media, .page-list .entry-list .entry-preview.has-media:first-child { padding: 0 0 24px; } .page-list .entry-preview.has-media > :not(.rmedia):not(.ampel-dot) { margin-left: 24px; margin-right: 24px; } .page-list .entry-preview.has-media .rmedia { height: 190px; } }
+
+/* Einzelseite */
+.page-recipe .rhero { height: 200px; border-radius: 24px; margin: 0 0 24px; box-shadow: 0 14px 34px rgba(46, 58, 50, .16); }
+.page-recipe .rhero .remo { font-size: 96px; }
+@media (min-width: 700px) { .page-recipe .rhero { height: 280px; } .page-recipe .rhero .remo { font-size: 120px; } }
+.page-recipe .entry-header h1 { font-size: clamp(30px, 7vw, 46px); }
+.page-recipe .ampel-dot-inline { vertical-align: middle; }
+.recipe-meta { flex-wrap: wrap; gap: 8px; }
+.recipe-meta span { background: #fff; border: 1px solid rgba(46, 58, 50, .1); padding: 6px 13px; border-radius: 99px; font-size: 14px; color: var(--ink); box-shadow: 0 3px 10px rgba(46, 58, 50, .05); }
+.recipe-ingredients { background: #fff; border-radius: 20px; box-shadow: 0 10px 28px rgba(46, 58, 50, .09); border-top: 5px solid var(--rust); }
+.recipe-ingredients ul { list-style: none; padding: 0; }
+.recipe-ingredients li { position: relative; padding: 9px 0 9px 26px; margin: 0; border-bottom: 1px dashed rgba(46, 58, 50, .14); }
+.recipe-ingredients li:last-child { border-bottom: 0; }
+.recipe-ingredients li::before { content: ''; position: absolute; left: 2px; top: 17px; width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, #F0A15A, var(--rust)); }
+.recipe-steps ol { list-style: none; padding: 0; counter-reset: s; }
+.recipe-steps li { counter-increment: s; position: relative; padding: 4px 0 4px 48px; margin-bottom: 16px; min-height: 36px; }
+.recipe-steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #F0A15A, var(--rust)); color: #fff; font: 600 16px 'Fraunces', serif; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(181, 80, 46, .35); }
+.rating-block { background: #fff; border-radius: 20px; box-shadow: 0 10px 28px rgba(46, 58, 50, .09); }
+
+/* ---------- Seitenköpfe als Farbwelt (wie auf der Startseite), Welt per nav.js: body[data-welt] ---------- */
+body[data-welt] .entry-header { margin: -28px -18px 26px; padding: 44px 22px 34px; min-height: 170px; display: flex; flex-direction: column; justify-content: center; background-size: cover, cover; background-position: center, center; background-repeat: no-repeat; color: var(--wc, #fff); }
+body[data-welt] .entry-header h1 { color: inherit; margin: 0; }
+body[data-welt] .entry-header .date { background: rgba(255, 255, 255, .22); color: inherit; align-self: flex-start; }
+body[data-welt] .entry-header .rule { background: currentColor; opacity: .55; }
+body[data-welt] .entry-header a:not(.toolbtn) { color: inherit; }
+body[data-welt] .entry-header .h1-link { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 2px; }
+body[data-welt] .entry-header .toolbtn { color: inherit; border-color: currentColor; background: rgba(255, 255, 255, .16); }
+@media (min-width: 700px) {
+  body[data-welt] .entry-header { margin: 0 0 40px; padding: 56px 44px 44px; min-height: 230px; border-radius: 22px; box-shadow: 0 10px 26px rgba(29, 43, 58, .16); }
+}
+body[data-welt="reise"] { --wc: #fff; }
+body[data-welt="reise"] .entry-header { background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 390 232%22 preserveAspectRatio=%22xMidYMid slice%22%3E%3Ccircle cx=%22330%22 cy=%2270%22 r=%2270%22 fill=%22%23FFE29A%22 opacity=%22.45%22/%3E%3Ccircle cx=%22330%22 cy=%2270%22 r=%2240%22 fill=%22%23FFF3E6%22 opacity=%22.8%22/%3E%3Cpath d=%22M0 196 Q70 150 140 190 T290 180 T400 196V232H0z%22 fill=%22%238F2F1F%22 opacity=%22.7%22/%3E%3C/svg%3E"), linear-gradient(170deg,#EA7A3E,#BE4128); }
+body[data-welt="berater"] { --wc: #1D2B3A; }
+body[data-welt="berater"] .entry-header { background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 390 232%22 preserveAspectRatio=%22xMidYMid slice%22%3E%3Ctext x=%22320%22 y=%22214%22 font-family=%22Georgia,serif%22 font-size=%22250%22 fill=%22%23FFF0BE%22 text-anchor=%22middle%22%3E%3F%3C/text%3E%3C/svg%3E"), linear-gradient(170deg,#FFD875,#F2B63D); }
+body[data-welt="rezept"] { --wc: #3B1A18; }
+body[data-welt="rezept"] .entry-header { background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 390 232%22 preserveAspectRatio=%22xMidYMid slice%22%3E%3Ccircle cx=%22330%22 cy=%22116%22 r=%2286%22 fill=%22%23FFF3E6%22 opacity=%22.55%22/%3E%3Ccircle cx=%22330%22 cy=%22116%22 r=%2254%22 fill=%22%23FFF3E6%22 opacity=%22.8%22/%3E%3Ccircle cx=%22330%22 cy=%22116%22 r=%2222%22 fill=%22%23F6C253%22/%3E%3C/svg%3E"), linear-gradient(170deg,#F8B7A5,#EE8F7A); }
+body[data-welt="geld"] { --wc: #fff; }
+body[data-welt="geld"] .entry-header { background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 390 232%22 preserveAspectRatio=%22xMidYMid slice%22%3E%3Cpath d=%22M40 210 A140 140 0 0 1 320 210%22 fill=%22none%22 stroke=%22%23F6C253%22 stroke-width=%222%22 opacity=%22.8%22/%3E%3Cpath d=%22M80 210 A100 100 0 0 1 280 210%22 fill=%22none%22 stroke=%22%23EE8F7A%22 stroke-width=%222%22 opacity=%22.8%22/%3E%3Ccircle cx=%22340%22 cy=%22150%22 r=%2222%22 fill=%22%23F6C253%22/%3E%3C/svg%3E"), linear-gradient(170deg,#7A3A7E,#3E1A41); }
+body[data-welt="quiz"] { --wc: #fff; }
+body[data-welt="quiz"] .entry-header { background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 390 232%22 preserveAspectRatio=%22xMidYMid slice%22%3E%3Cpath d=%22M310 40l9 20 22 3-16 15 4 22-19-11-19 11 4-22-16-15 22-3z%22 fill=%22%23F6C253%22/%3E%3Ccircle cx=%22360%22 cy=%22150%22 r=%2216%22 fill=%22%23E2683C%22/%3E%3Crect x=%22262%22 y=%22140%22 width=%2230%22 height=%2230%22 rx=%226%22 fill=%22%23FBF3E4%22 transform=%22rotate(16 277 155)%22/%3E%3C/svg%3E"), linear-gradient(170deg,#6F7D2E,#4A5620); }
+body[data-welt="essen"] { --wc: #fff; }
+body[data-welt="essen"] .entry-header { background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 390 232%22 preserveAspectRatio=%22xMidYMid slice%22%3E%3Cpath d=%22M280 220c-14-80 24-140 100-150 4 80-24 140-100 150z%22 fill=%22%237FCBA2%22 opacity=%22.6%22/%3E%3Cpath d=%22M280 220c14-54 50-100 100-150%22 fill=%22none%22 stroke=%22%23FBF3E4%22 stroke-width=%222%22/%3E%3C/svg%3E"), linear-gradient(170deg,#3C9370,#1F6B4A); }
+body[data-welt="nacht"] { --wc: #fff; }
+body[data-welt="nacht"] .entry-header { background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 390 232%22 preserveAspectRatio=%22xMidYMid slice%22%3E%3Ccircle cx=%2250%22 cy=%2240%22 r=%222%22 fill=%22%23FBF3E4%22/%3E%3Ccircle cx=%22170%22 cy=%2224%22 r=%221.6%22 fill=%22%23FBF3E4%22/%3E%3Ccircle cx=%22260%22 cy=%2250%22 r=%222.2%22 fill=%22%23FBF3E4%22/%3E%3Cpath d=%22M0 200 L70 150 L130 188 L210 120 L290 190 L340 160 L390 196V232H0z%22 fill=%22%231D2B3A%22 opacity=%22.8%22/%3E%3Ccircle cx=%22330%22 cy=%2262%22 r=%2222%22 fill=%22%23F6C253%22/%3E%3C/svg%3E"), linear-gradient(170deg,#2E4A5F,#1D2B3A); }
+body[data-welt] .entry-header .rule { display: none; }
+body[data-welt] .entry-header .toolgroup { top: 10px; right: 12px; gap: 6px; }
+body[data-welt] .entry-header .toolbtn, body[data-welt] .entry-header .toolbtn:hover, body[data-welt] .entry-header .toolbtn:active { color: inherit; background: rgba(255, 255, 255, .2) !important; border: 0 !important; border-radius: 10px; box-shadow: none; }
+
+/* ---------- Zeitraum-Leiste (Charts): schmal und dezent ---------- */
+.rng { display: flex; width: fit-content; max-width: 100%; margin: 10px auto 0; gap: 2px; padding: 2px; background: rgba(46, 58, 50, .07); border-radius: 999px; overflow-x: auto; scrollbar-width: none; }
+.rng::-webkit-scrollbar { display: none; }
+.rng button { flex: 1 0 auto; border: 0; background: transparent; color: var(--ink-soft); font: inherit; font-size: 12.5px; font-weight: 500; line-height: 1.2; padding: 5px 12px; border-radius: 999px; cursor: pointer; white-space: nowrap; }
+.rng button[aria-pressed="true"] { background: #fff; color: var(--rust); box-shadow: 0 1px 3px rgba(46, 58, 50, .18); }
+
+/* ---------- Zurück-Pfeil auf Höhe der Überschrift ---------- */
+.back-ersetzt { display: none !important; }
+h1.mit-zurueck { position: relative; padding-left: 52px; }
+.back-ico { position: absolute; left: 0; top: 0; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(46, 58, 50, .08); color: var(--ink) !important; text-decoration: none !important; border: 0 !important; transition: background .2s; }
+.back-ico:hover { background: rgba(181, 80, 46, .18); }
+body[data-welt] .back-ico { background: rgba(255, 255, 255, .22); color: inherit !important; }
+.h1-sep { color: var(--ink-soft); opacity: .55; font-weight: 400; }
+.h1-link { color: var(--rust); text-decoration: none; border: 0; }
+
+/* Reiter unter der Überschrift (Reisen: Vorschläge, Planung, Ideen) */
+.sub-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+.sub-tabs a, body[data-welt] .entry-header .sub-tabs a { display: inline-block; padding: 8px 18px; border-radius: 99px; font-size: 15px; font-weight: 600; text-decoration: none; color: #fff; background: rgba(255, 255, 255, .2); border: 1.5px solid rgba(255, 255, 255, .55); transition: background .15s; }
+.sub-tabs a:hover { background: rgba(255, 255, 255, .32); }
+.sub-tabs a[aria-current="page"], body[data-welt] .entry-header .sub-tabs a[aria-current="page"] { background: #fff; color: #9c3a1c; border-color: #fff; box-shadow: 0 4px 12px rgba(0, 0, 0, .18); }
+
+/* ---------- PC: große Bildschirme nutzen (Seiten mit body.pc) ---------- */
+@media (min-width: 1200px) {
+  body.pc .topin { max-width: min(1760px, 100%); padding-left: 48px; padding-right: 48px; }
+  body.pc .wrap { max-width: min(1760px, 100%); padding-left: 48px; padding-right: 48px; }
+  body.pc .entry-header { max-width: none; }
+}
+/* PC: Platz genug, Schriftzug neben dem Logo wieder zeigen (am Handy und im Querformat bleibt er weg) */
+@media (min-width: 1200px) { .topbar .brand .bt { display: inline; } .topbar .topnav a { padding: 8px 16px; } }
+
+@media (min-width: 1200px) {
+  /* Übersichtslisten (Rezepte, Reisen): mehr Spalten */
+  body.pc.page-list .entry-list { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 22px; }
+  /* München-Übersicht: Kacheln in drei Spalten */
+  body.pc .bento.pcgrid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; margin-left: 0; margin-right: 0; }
+  body.pc .bento.pcgrid .tile { grid-column: span 2; }
+  body.pc .bento.pcgrid .tile.wide { grid-column: span 3; }
+  /* Karten (Immobiliensuche) höher */
+  body.pc #region-map { height: 62vh; min-height: 420px; }
+  body.pc .bento.pcgrid { grid-auto-flow: dense; }
+  body.pc.home .bento.pcgrid { margin-top: 24px; }
+  body.pc .sr #liste { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; }
+  body.pc .sr .kopf { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  body.pc .sr .kopf > * { margin: 0; }
+  body.pc .sr #liste .legende { grid-column: 1 / -1; }
+  body.pc.page-wide.page-read .wrap { max-width: min(1760px, 100%); }
+  body.pc.page-read article { column-count: 3; column-gap: 56px; }
+  body.pc.page-read article h2.subhead { break-after: avoid; }
+  body.pc.page-read article > .entry-header, body.pc.page-read article > .entry-body, body.pc.page-read article > .controls { column-span: all; }
+  body.pc.page-read article table { break-inside: avoid; }
+  body.pc.page-info article > section.sec { break-inside: avoid; margin-bottom: 8px; }
+  body.pc.page-info article .hotel-group, body.pc.page-info article .tip-box, body.pc.page-info article .safety-box, body.pc.page-info article .note-box, body.pc.page-info article table { break-inside: avoid; }
+  body.pc.page-single .wrap { max-width: min(1760px, 100%); }
+  body.pc.page-info.page-single article { column-count: 2; column-gap: 72px; max-width: none; }
+  body.pc.page-info.page-single article > .entry-header, body.pc.page-info.page-single article > .entry-header + .entry-body { column-span: all; max-width: none; }
+  body.pc.page-info.page-single article > section.sec { break-inside: auto; }
+  body.pc.page-info.page-single article > section.sec > h2.subhead { break-after: avoid; }
+  body.pc.page-read article { column-count: auto; column-width: 430px; }
+  body.pc.page-read article > section.sec { break-inside: avoid; margin-bottom: 8px; }
+  body.pc.page-read .controls { width: fit-content; }
+}
+
+/* Trendbruch-Warnung (nav.js) */
+.tw { display: block; padding: 9px 16px; font-size: 14px; line-height: 1.4; text-align: center; text-decoration: none; color: #2E3A32; border-bottom: 1px solid rgba(46,58,50,.15); }
+.tw .tw-s { display: block; font-size: 12px; opacity: .8; }
+.tw1 { background: #F6E3A8; }
+.tw2 { background: #F3C089; }
+.tw3 { background: #E9A08C; }
